@@ -3,23 +3,6 @@
 [ext_resource type="Script" uid="uid://firo45ogeshs" path="res://Scripts/player_controller.gd" id="1_v0iea"]
 [ext_resource type="Texture2D" uid="uid://bileg2jrs85l0" path="res://Assets_Art/spritesheep.png" id="2_cvnsp"]
 
-[sub_resource type="Animation" id="Animation_vgqql"]
-resource_name = "walk_h"
-length = 0.45
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:region_rect")
-tracks/0/interp = 0
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.15, 0.3, 0.45),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 0,
-"values": [Rect2(-1, 160, 33, 32), Rect2(32, 160, 34, 32), Rect2(66, 160, 33, 32), Rect2(99, 160, 33, 32)]
-}
-
 [sub_resource type="Animation" id="Animation_6t5aa"]
 resource_name = "idle"
 length = 0.45
@@ -35,6 +18,23 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 0,
 "values": [Rect2(-1, 160, 33, 32), Rect2(0, 0, 33, 32), Rect2(33, 0, 35, 32), Rect2(68, 0, 35, 32), Rect2(103, 0, 35, 32)]
+}
+
+[sub_resource type="Animation" id="Animation_vgqql"]
+resource_name = "walk_h"
+length = 0.45
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:region_rect")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.3, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Rect2(-1, 160, 33, 32), Rect2(32, 160, 34, 32), Rect2(66, 160, 33, 32), Rect2(99, 160, 33, 32)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_fkybt"]

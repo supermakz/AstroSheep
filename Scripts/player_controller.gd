@@ -9,7 +9,7 @@ enum AttackType { INNERORBIT, MIDORBIT, OUTERORBIT }
 @export_group("Movement")
 @export var speed: float = 120
 @export var acceleration: float = 700
-@export var friction: float = 986
+@export var friction: float = 443
 
 @export_group("Dash")
 @export var dash_speed: float = 350.0
