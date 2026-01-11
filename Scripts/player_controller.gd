@@ -30,6 +30,7 @@ var current_attack_type: AttackType = AttackType.INNERORBIT
 @onready var anim_tree: AnimationTree = $AnimationTree
 @onready var anim_state = anim_tree.get("parameters/playback")
 
+
 var state_timer: float = 0.0
 var dash_cd_timer: float = 0.0
 var dash_direction: Vector2 = Vector2.ZERO
@@ -44,7 +45,7 @@ func _physics_process(delta: float) -> void:
 	elif current_state == State.DASH:
 		_process_dash()
 	
-	# --- NEU: Animations-Update jeden Frame ---
+	# --- Animations-Update jeden Frame ---
 	_update_animations()
 	
 	move_and_slide()
@@ -70,13 +71,13 @@ func _handle_input_actions() -> void:
 	elif Input.is_action_just_pressed("parry"):
 		_try_parry()
 
-# --- NEU: Funktion zur Steuerung des AnimationTrees ---
+# --- Funktion zur Steuerung des AnimationTrees ---
 func _update_animations() -> void:
 	match current_state:
 		State.IDLE:
 			anim_state.travel("idle")
 		State.MOVE:
-			anim_state.travel("walk_h")
+			anim_state.travel("walk")
 		State.DASH:
 			anim_state.travel("dash")
 		State.PARRY:
@@ -101,9 +102,14 @@ func _handle_movement(delta: float) -> void:
 		current_state = State.MOVE
 		velocity = velocity.move_toward(input * speed, acceleration * delta)
 		
+		anim_tree.set("parameters/walk/blend_position", input.normalized())
+		anim_tree.set("parameters/idle/blend_position", input.normalized())	
+		
 		# --- Sprite flippen basierend auf Laufrichtung ---
-		if input.x != 0:
-			$Sprite2D.flip_h = input.x > 0
+		if input.x > 0:
+			$Sprite2D.flip_h = true
+		elif input.x < 0:
+			$Sprite2D.flip_h = false
 		
 	else:
 		current_state = State.IDLE
