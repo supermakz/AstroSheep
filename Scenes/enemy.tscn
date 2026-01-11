@@ -1,0 +1,46 @@
+[gd_scene load_steps=6 format=3 uid="uid://kph3okjs0un8"]
+
+[ext_resource type="Script" uid="uid://dwpyvk5ntmfha" path="res://Scenes/enemy.gd" id="1_1f0kj"]
+[ext_resource type="Texture2D" uid="uid://c4uy3fnyxvjag" path="res://Assets_Art/foxenemy.png" id="1_hghv2"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hghv2"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_hghv2")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hghv2"]
+size = Vector2(24, 23)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1f0kj"]
+size = Vector2(24, 22)
+
+[node name="enemy" type="CharacterBody2D"]
+y_sort_enabled = true
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_1f0kj")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_hghv2")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2, 3)
+shape = SubResource("RectangleShape2D_hghv2")
+disabled = true
+
+[node name="Hitbox" type="Area2D" parent="."]
+y_sort_enabled = true
+collision_layer = 8
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+y_sort_enabled = true
+position = Vector2(-2, 3)
+shape = SubResource("RectangleShape2D_1f0kj")

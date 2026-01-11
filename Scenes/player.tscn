@@ -204,13 +204,16 @@ states/walk/position = Vector2(214, 38)
 transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_pu2lt"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_ukyrk"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_7dp3o")]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_cvnsp"]
-radius = 7.5
-height = 28.0
+height = 26.0
 
 [node name="Player" type="CharacterBody2D"]
+y_sort_enabled = true
+collision_layer = 3
+collision_mask = 7
 script = ExtResource("1_v0iea")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+y_sort_enabled = true
 texture = ExtResource("2_cvnsp")
 region_enabled = true
 region_rect = Rect2(0, 224, 32, 32)
@@ -228,8 +231,9 @@ parameters/idle/blend_position = Vector2(0.0015949011, 0.72197306)
 parameters/walk/blend_position = Vector2(-0.0015949011, 0.77443945)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(1, 2)
+y_sort_enabled = true
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_cvnsp")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+y_sort_enabled = true
