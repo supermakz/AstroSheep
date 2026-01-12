@@ -1,0 +1,159 @@
+[gd_scene load_steps=10 format=3 uid="uid://dxuyeu6hpblcg"]
+
+[ext_resource type="Script" uid="uid://br55laarog4go" path="res://Scripts/attack_system.gd" id="1_3kckg"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3kckg"]
+
+[sub_resource type="Animation" id="Animation_husra"]
+resource_name = "attack_innerorbit"
+length = 0.15
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("EffectSprite:texture")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(),
+"transitions": PackedFloat32Array(),
+"update": 1,
+"values": []
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("EffectSprite:region_rect")
+tracks/1/interp = 0
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.03, 0.06, 0.09, 0.12, 0.15),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Rect2(0, 0, 32, 32), Rect2(45, 0, 32, 32), Rect2(86, 0, 32, 32), Rect2(123, 0, 32, 32), Rect2(163, 0, 32, 32), Rect2(210, 0, 32, 32)]
+}
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_3kckg"]
+load_path = "res://.godot/imported/InnerOrbitAttack.png-f942cbc9986a12ed1426a3924b85bfb3.ctex"
+
+[sub_resource type="Animation" id="Animation_t4wcd"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("EffectSprite:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("CompressedTexture2D_3kckg")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("EffectSprite:region_rect")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Rect2(0, 0, 32, 32)]
+}
+
+[sub_resource type="Animation" id="Animation_qqjp5"]
+resource_name = "attack_innerorbit2"
+length = 0.15
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("EffectSprite:region_rect")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0214, 0.0428, 0.0642, 0.0856, 0.107, 0.1284, 0.15),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Rect2(345, 0, 32, 32), Rect2(395, 0, 32, 32), Rect2(443, 0, 32, 32), Rect2(494, 0, 32, 32), Rect2(549, 0, 32, 32), Rect2(597, 0, 32, 32), Rect2(652, 0, 32, 32), Rect2(710, 0, 32, 32)]
+}
+
+[sub_resource type="Animation" id="Animation_3kckg"]
+resource_name = "attack_innerorbit3"
+length = 0.15
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("EffectSprite:texture")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(),
+"transitions": PackedFloat32Array(),
+"update": 1,
+"values": []
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("EffectSprite:region_rect")
+tracks/1/interp = 0
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.03, 0.06, 0.09, 0.12, 0.15),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Rect2(0, 0, 32, 32), Rect2(45, 0, 32, 32), Rect2(86, 0, 32, 32), Rect2(123, 0, 32, 32), Rect2(163, 0, 32, 32), Rect2(210, 0, 32, 32)]
+}
+
+[sub_resource type="Animation" id="Animation_picr7"]
+resource_name = "attack_innerorbit4"
+length = 0.15
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("EffectSprite:region_rect")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0214, 0.0428, 0.0642, 0.0856, 0.107, 0.1284, 0.15),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Rect2(345, 0, 32, 32), Rect2(395, 0, 32, 32), Rect2(443, 0, 32, 32), Rect2(494, 0, 32, 32), Rect2(549, 0, 32, 32), Rect2(597, 0, 32, 32), Rect2(652, 0, 32, 32), Rect2(710, 0, 32, 32)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3kckg"]
+_data = {
+&"RESET": SubResource("Animation_t4wcd"),
+&"attack_innerorbit": SubResource("Animation_husra"),
+&"attack_innerorbit2": SubResource("Animation_qqjp5"),
+&"attack_innerorbit3": SubResource("Animation_3kckg"),
+&"attack_innerorbit4": SubResource("Animation_picr7")
+}
+
+[node name="AttackSystem" type="Node2D"]
+script = ExtResource("1_3kckg")
+
+[node name="ComboTimer" type="Timer" parent="."]
+
+[node name="UltimateTimer" type="Timer" parent="."]
+
+[node name="OrbitSpawnPoint" type="Marker2D" parent="."]
+
+[node name="MeleeHitbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MeleeHitbox"]
+shape = SubResource("CircleShape2D_3kckg")
+disabled = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_3kckg")
+}
+
+[node name="EffectSprite" type="Sprite2D" parent="."]
+texture = SubResource("CompressedTexture2D_3kckg")
+region_enabled = true
+region_rect = Rect2(0, 0, 32, 32)
+
+[connection signal="area_entered" from="MeleeHitbox" to="." method="_on_melee_hitbox_area_entered"]

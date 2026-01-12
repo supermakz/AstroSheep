@@ -3,7 +3,7 @@ class_name PlayerController
 
 # --- Enums ---
 enum State { IDLE, MOVE, DASH, ATTACK, PARRY }
-enum AttackType { INNERORBIT, MIDORBIT, OUTERORBIT }
+enum AttackType { UNARMED, INNERORBIT, MIDORBIT, OUTERORBIT }
 
 # --- Configuration ---
 @export_group("Movement")
@@ -18,6 +18,7 @@ enum AttackType { INNERORBIT, MIDORBIT, OUTERORBIT }
 
 @export_group("Combat")
 @export var parry_duration: float = 0.3
+@export var duration_unarmed: float = 0.1
 @export var duration_innerorbit: float = 0.15
 @export var duration_midorbit: float = 0.3
 @export var duration_outerorbit: float = 0.5
@@ -27,6 +28,7 @@ var current_state: State = State.IDLE
 var current_attack_type: AttackType = AttackType.INNERORBIT
 
 # --- Reference for animation ---
+@onready var attack_system: Node2D = $AttackSystem
 @onready var anim_tree: AnimationTree = $AnimationTree
 @onready var anim_state = anim_tree.get("parameters/playback")
 
@@ -85,6 +87,7 @@ func _update_animations() -> void:
 		State.ATTACK:
 			# Spielt je nach Waffentyp eine andere Animation ab
 			match current_attack_type:
+				AttackType.UNARMED: anim_state.travel("attack_unarmed")
 				AttackType.INNERORBIT: anim_state.travel("attack_inner")
 				AttackType.MIDORBIT: anim_state.travel("attack_mid")
 				AttackType.OUTERORBIT: anim_state.travel("attack_outer")
@@ -93,6 +96,10 @@ func _cycle_attack_type() -> void:
 	# Modulo-Arithmetik für endloses Cycling
 	var type_count = AttackType.values().size()
 	current_attack_type = (current_attack_type + 1) % type_count as AttackType
+	
+	if attack_system:
+		attack_system.set_orbit_index(current_attack_type)
+	
 	print("Switched to: ", AttackType.keys()[current_attack_type])
 
 func _handle_movement(delta: float) -> void:
@@ -134,8 +141,13 @@ func _try_attack() -> void:
 	current_state = State.ATTACK
 	velocity = Vector2.ZERO # Stop movement on attack start
 	
+	if attack_system:
+		attack_system.trigger_attack(get_global_mouse_position())
+	
 	# Waffenspezifische Logik
 	match current_attack_type:
+		AttackType.UNARMED:
+			state_timer = duration_unarmed
 		AttackType.INNERORBIT:
 			state_timer = duration_innerorbit
 			# Todo: Hitbox aktivieren
@@ -150,3 +162,4 @@ func _try_parry() -> void:
 	current_state = State.PARRY
 	state_timer = parry_duration
 	velocity = Vector2.ZERO
+	

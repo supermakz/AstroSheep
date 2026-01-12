@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://kph3okjs0un8"]
 
-[ext_resource type="Script" uid="uid://dwpyvk5ntmfha" path="res://Scenes/enemy.gd" id="1_1f0kj"]
+[ext_resource type="Script" uid="uid://dwpyvk5ntmfha" path="res://Scripts/enemy.gd" id="1_1f0kj"]
 [ext_resource type="Texture2D" uid="uid://c4uy3fnyxvjag" path="res://Assets_Art/foxenemy.png" id="1_hghv2"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_hghv2"]
@@ -33,7 +33,6 @@ animation = &"idle"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-2, 3)
 shape = SubResource("RectangleShape2D_hghv2")
-disabled = true
 
 [node name="Hitbox" type="Area2D" parent="."]
 y_sort_enabled = true

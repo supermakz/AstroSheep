@@ -1,0 +1,12 @@
+[gd_scene load_steps=2 format=3 uid="uid://dxuyeu6hpblcg"]
+
+[ext_resource type="Script" uid="uid://br55laarog4go" path="res://attack_system.gd" id="1_3kckg"]
+
+[node name="AttackSystem" type="Node2D"]
+script = ExtResource("1_3kckg")
+
+[node name="ComboTimer" type="Timer" parent="."]
+
+[node name="UltimateTimer" type="Timer" parent="."]
+
+[node name="ObitSpawnPoint" type="Marker2D" parent="."]

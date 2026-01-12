@@ -2,21 +2,7 @@
 
 [ext_resource type="Script" uid="uid://firo45ogeshs" path="res://Scripts/player_controller.gd" id="1_v0iea"]
 [ext_resource type="Texture2D" uid="uid://bileg2jrs85l0" path="res://Assets_Art/spritesheep.png" id="2_cvnsp"]
-
-[sub_resource type="Animation" id="Animation_fkybt"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D:region_rect")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Rect2(0, 224, 32, 32)]
-}
+[ext_resource type="PackedScene" uid="uid://dxuyeu6hpblcg" path="res://Scenes/attack_system.tscn" id="3_6t5aa"]
 
 [sub_resource type="Animation" id="Animation_3smsa"]
 resource_name = "idle_down"
@@ -122,7 +108,6 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_fkybt"]
 _data = {
-&"RESET": SubResource("Animation_fkybt"),
 &"idle_down": SubResource("Animation_3smsa"),
 &"idle_h": SubResource("Animation_6t5aa"),
 &"idle_up": SubResource("Animation_8erm5"),
@@ -216,7 +201,7 @@ script = ExtResource("1_v0iea")
 y_sort_enabled = true
 texture = ExtResource("2_cvnsp")
 region_enabled = true
-region_rect = Rect2(0, 224, 32, 32)
+region_rect = Rect2(39, 30, 29, 29)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
@@ -237,3 +222,5 @@ shape = SubResource("CapsuleShape2D_cvnsp")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 y_sort_enabled = true
+
+[node name="AttackSystem" parent="." instance=ExtResource("3_6t5aa")]
