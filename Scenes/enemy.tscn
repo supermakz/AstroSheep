@@ -26,9 +26,10 @@ size = Vector2(24, 22)
 modulate_color = Color(0.6786534, 0, 0.023173416, 1)
 
 [node name="enemy" type="CharacterBody2D"]
+z_index = 1
 y_sort_enabled = true
 collision_layer = 4
-collision_mask = 3
+collision_mask = 7
 script = ExtResource("1_1f0kj")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -39,12 +40,11 @@ animation = &"idle"
 position = Vector2(-2, 3)
 shape = SubResource("RectangleShape2D_hghv2")
 
-[node name="Hitbox" type="Area2D" parent="."]
-y_sort_enabled = true
-collision_layer = 8
-collision_mask = 2
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 160
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 y_sort_enabled = true
 position = Vector2(-2, 3)
 shape = SubResource("RectangleShape2D_1f0kj")

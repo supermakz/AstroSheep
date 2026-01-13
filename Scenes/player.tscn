@@ -193,15 +193,15 @@ height = 26.0
 
 [node name="Player" type="CharacterBody2D"]
 y_sort_enabled = true
-collision_layer = 3
-collision_mask = 7
+collision_layer = 2
+collision_mask = 5
 script = ExtResource("1_v0iea")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 y_sort_enabled = true
 texture = ExtResource("2_cvnsp")
 region_enabled = true
-region_rect = Rect2(39, 30, 29, 29)
+region_rect = Rect2(75, 30, 27, 29)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

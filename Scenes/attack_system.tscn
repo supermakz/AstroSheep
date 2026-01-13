@@ -19,8 +19,8 @@ tracks/0/keys = {
 "values": [true]
 }
 
-[sub_resource type="Animation" id="Animation_qqjp5"]
-resource_name = "attack_innerorbit2"
+[sub_resource type="Animation" id="Animation_husra"]
+resource_name = "attack_innerorbit1"
 length = 0.15
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -29,10 +29,10 @@ tracks/0/path = NodePath("EffectSprite:region_rect")
 tracks/0/interp = 0
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.0214, 0.0428, 0.0642, 0.0856, 0.107, 0.1284, 0.15),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 0,
-"values": [Rect2(345, 0, 32, 32), Rect2(395, 0, 32, 32), Rect2(443, 0, 32, 32), Rect2(494, 0, 32, 32), Rect2(549, 0, 32, 32), Rect2(597, 0, 32, 32), Rect2(652, 0, 32, 32), Rect2(710, 0, 32, 32)]
+"times": PackedFloat32Array(0, 0.03, 0.06, 0.09, 0.12, 0.15),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [Rect2(0, 0, 32, 32), Rect2(45, 0, 32, 32), Rect2(86, 0, 32, 32), Rect2(123, 0, 32, 32), Rect2(163, 0, 32, 32), Rect2(210, 0, 32, 32)]
 }
 tracks/1/type = "method"
 tracks/1/imported = false
@@ -61,8 +61,8 @@ tracks/2/keys = {
 "values": [true, false]
 }
 
-[sub_resource type="Animation" id="Animation_picr7"]
-resource_name = "attack_innerorbit4"
+[sub_resource type="Animation" id="Animation_qqjp5"]
+resource_name = "attack_innerorbit2"
 length = 0.15
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -145,8 +145,8 @@ tracks/2/keys = {
 "values": [true, false]
 }
 
-[sub_resource type="Animation" id="Animation_husra"]
-resource_name = "attack_innerorbit1"
+[sub_resource type="Animation" id="Animation_picr7"]
+resource_name = "attack_innerorbit4"
 length = 0.15
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -155,10 +155,10 @@ tracks/0/path = NodePath("EffectSprite:region_rect")
 tracks/0/interp = 0
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.03, 0.06, 0.09, 0.12, 0.15),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [Rect2(0, 0, 32, 32), Rect2(45, 0, 32, 32), Rect2(86, 0, 32, 32), Rect2(123, 0, 32, 32), Rect2(163, 0, 32, 32), Rect2(210, 0, 32, 32)]
+"times": PackedFloat32Array(0, 0.0214, 0.0428, 0.0642, 0.0856, 0.107, 0.1284, 0.15),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Rect2(345, 0, 32, 32), Rect2(395, 0, 32, 32), Rect2(443, 0, 32, 32), Rect2(494, 0, 32, 32), Rect2(549, 0, 32, 32), Rect2(597, 0, 32, 32), Rect2(652, 0, 32, 32), Rect2(710, 0, 32, 32)]
 }
 tracks/1/type = "method"
 tracks/1/imported = false
@@ -205,7 +205,8 @@ script = ExtResource("1_3kckg")
 [node name="OrbitSpawnPoint" type="Marker2D" parent="."]
 
 [node name="MeleeHitbox" type="Area2D" parent="."]
-collision_mask = 9
+collision_layer = 32
+collision_mask = 17
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="MeleeHitbox"]
 position = Vector2(5, -24)

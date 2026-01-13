@@ -5,7 +5,7 @@ extends CharacterBody2D
 @export var friction := 800.0 # Um den Knockback sanft zu stoppen
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
-@onready var hitbox: Area2D = $Hitbox
+@onready var hitbox: Area2D = $Hurtbox
 @onready var health_bar: ProgressBar = $HealthBar
 
 var hp: int = max_hp
