@@ -1,165 +1,123 @@
 extends CharacterBody2D
 class_name PlayerController
 
-# --- Enums ---
 enum State { IDLE, MOVE, DASH, ATTACK, PARRY }
 enum AttackType { UNARMED, INNERORBIT, MIDORBIT, OUTERORBIT }
 
-# --- Configuration ---
 @export_group("Movement")
-@export var speed: float = 120
-@export var acceleration: float = 700
-@export var friction: float = 443
+@export var speed := 120.0
+@export var acceleration := 700.0
+@export var friction := 950.0
 
 @export_group("Dash")
-@export var dash_speed: float = 350.0
-@export var dash_duration: float = 0.2
-@export var dash_cooldown: float = 0.8
+@export var dash_speed := 350.0
+@export var dash_duration := 0.2
+@export var dash_cooldown := 0.8
 
-@export_group("Combat")
-@export var parry_duration: float = 0.3
-@export var duration_unarmed: float = 0.1
-@export var duration_innerorbit: float = 0.15
-@export var duration_midorbit: float = 0.3
-@export var duration_outerorbit: float = 0.5
+@export var parry_duration := 0.3
 
-# --- Runtime State ---
-var current_state: State = State.IDLE
-var current_attack_type: AttackType = AttackType.INNERORBIT
-
-# --- Reference for animation ---
-@onready var attack_system: Node2D = $AttackSystem
+@onready var attack_system: AttackSystem = $AttackSystem
 @onready var anim_tree: AnimationTree = $AnimationTree
 @onready var anim_state = anim_tree.get("parameters/playback")
 
+var facing_dir: Vector2 = Vector2.DOWN
+var state: State = State.IDLE
+var state_timer := 0.0
+var dash_cd := 0.0
+var dash_dir := Vector2.ZERO
+var combo_requested: bool = false
 
-var state_timer: float = 0.0
-var dash_cd_timer: float = 0.0
-var dash_direction: Vector2 = Vector2.ZERO
+func _ready() -> void:
+	attack_system.attack_started.connect(_on_attack_started)
+	attack_system.attack_finished.connect(_on_attack_finished)
 
 func _physics_process(delta: float) -> void:
-	_handle_timers(delta)
-	
-	# Input Handling nur wenn Action-fähig
-	if current_state in [State.IDLE, State.MOVE]:
-		_handle_input_actions()
-		_handle_movement(delta)
-	elif current_state == State.DASH:
-		_process_dash()
-	
-	# --- Animations-Update jeden Frame ---
-	_update_animations()
-	
+	_update_timers(delta)
+	_process_state(delta)
 	move_and_slide()
 
-func _handle_timers(delta: float) -> void:
-	if dash_cd_timer > 0: dash_cd_timer -= delta
-	
+func _update_timers(delta: float) -> void:
+	if dash_cd > 0:
+		dash_cd -= delta
 	if state_timer > 0:
 		state_timer -= delta
 		if state_timer <= 0:
-			current_state = State.IDLE
+			state = State.IDLE
 
-func _handle_input_actions() -> void:
-	# Weapon Cycling (Jederzeit möglich im Idle/Move)
-	if Input.is_action_just_pressed("cycle_weapon"):
-		_cycle_attack_type()
+func _process_state(delta: float) -> void:
+	match state:
+		State.IDLE, State.MOVE:
+			_handle_input()
+			_handle_movement(delta)
+		State.DASH:
+			velocity = dash_dir * dash_speed
+		State.ATTACK, State.PARRY:
+			velocity = Vector2.ZERO
 
-	# Action Triggers
-	if Input.is_action_just_pressed("dash"):
-		_try_dash()
-	elif Input.is_action_just_pressed("attack"):
-		_try_attack()
+	_update_animation()
+
+func _handle_input() -> void:
+	if Input.is_action_just_pressed("attack"):
+		_start_attack()
+	elif Input.is_action_just_pressed("dash"):
+		_start_dash()
 	elif Input.is_action_just_pressed("parry"):
-		_try_parry()
+		_start_parry()
 
-# --- Funktion zur Steuerung des AnimationTrees ---
-func _update_animations() -> void:
-	match current_state:
+func _handle_movement(delta: float) -> void:
+	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	if input != Vector2.ZERO:
+		facing_dir = input.normalized()
+		state = State.MOVE
+		velocity = velocity.move_toward(input * speed, acceleration * delta)
+	
+		$Sprite2D.flip_h = input.x > 0
+	else:
+		state = State.IDLE
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+			
+	_update_animation_blend()
+
+func _update_animation_blend() -> void:
+	if velocity.length() > 0.01:
+		var dir := velocity.normalized()
+		anim_tree.set("parameters/walk/blend_position", dir)
+		anim_tree.set("parameters/idle/blend_position", dir)
+
+func _start_attack() -> void:
+	state = State.ATTACK
+	attack_system.request_attack(facing_dir)
+
+func _start_dash() -> void:
+	if dash_cd > 0:
+		return
+	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	if input == Vector2.ZERO:
+		return
+
+	state = State.DASH
+	state_timer = dash_duration
+	dash_cd = dash_cooldown
+	dash_dir = input.normalized()
+
+func _start_parry() -> void:
+	state = State.PARRY
+	state_timer = parry_duration
+
+func _update_animation() -> void:
+	match state:
 		State.IDLE:
 			anim_state.travel("idle")
 		State.MOVE:
 			anim_state.travel("walk")
 		State.DASH:
 			anim_state.travel("dash")
-		State.PARRY:
-			anim_state.travel("parry")
-		State.ATTACK:
-			# Spielt je nach Waffentyp eine andere Animation ab
-			match current_attack_type:
-				AttackType.UNARMED: anim_state.travel("attack_unarmed")
-				AttackType.INNERORBIT: anim_state.travel("attack_inner")
-				AttackType.MIDORBIT: anim_state.travel("attack_mid")
-				AttackType.OUTERORBIT: anim_state.travel("attack_outer")
 
-func _cycle_attack_type() -> void:
-	# Modulo-Arithmetik für endloses Cycling
-	var type_count = AttackType.values().size()
-	current_attack_type = (current_attack_type + 1) % type_count as AttackType
-	
-	if attack_system:
-		attack_system.set_orbit_index(current_attack_type)
-	
-	print("Switched to: ", AttackType.keys()[current_attack_type])
+func _on_attack_started() -> void:
+	pass
 
-func _handle_movement(delta: float) -> void:
-	var input = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	
-	if input != Vector2.ZERO:
-		current_state = State.MOVE
-		velocity = velocity.move_toward(input * speed, acceleration * delta)
-		
-		anim_tree.set("parameters/walk/blend_position", input.normalized())
-		anim_tree.set("parameters/idle/blend_position", input.normalized())	
-		
-		# --- Sprite flippen basierend auf Laufrichtung ---
-		if input.x > 0:
-			$Sprite2D.flip_h = true
-		elif input.x < 0:
-			$Sprite2D.flip_h = false
-		
-	else:
-		current_state = State.IDLE
-		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
-
-func _try_dash() -> void:
-	if dash_cd_timer > 0: return
-	
-	var input = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	if input == Vector2.ZERO: return # Kein Dash im Stand
-	
-	current_state = State.DASH
-	state_timer = dash_duration
-	dash_cd_timer = dash_cooldown
-	dash_direction = input
-	velocity = dash_direction * dash_speed
-
-func _process_dash() -> void:
-	velocity = dash_direction * dash_speed
+func _on_attack_finished() -> void:
+	state = State.IDLE
 
 func _try_attack() -> void:
-	current_state = State.ATTACK
-	velocity = Vector2.ZERO # Stop movement on attack start
-	
-	if attack_system:
-		attack_system.trigger_attack(get_global_mouse_position())
-	
-	# Waffenspezifische Logik
-	match current_attack_type:
-		AttackType.UNARMED:
-			state_timer = duration_unarmed
-		AttackType.INNERORBIT:
-			state_timer = duration_innerorbit
-			# Todo: Hitbox aktivieren
-		AttackType.MIDORBIT:
-			state_timer = duration_midorbit
-			# Todo: Projectile instanzieren
-		AttackType.OUTERORBIT:
-			state_timer = duration_outerorbit
-			# Todo: Cast Area spawnen
-
-func _try_parry() -> void:
-	current_state = State.PARRY
-	state_timer = parry_duration
-	velocity = Vector2.ZERO
-	
+	attack_system.request_attack(facing_dir)

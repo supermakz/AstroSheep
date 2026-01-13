@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://kph3okjs0un8"]
+[gd_scene load_steps=8 format=3 uid="uid://kph3okjs0un8"]
 
 [ext_resource type="Script" uid="uid://dwpyvk5ntmfha" path="res://Scripts/enemy.gd" id="1_1f0kj"]
 [ext_resource type="Texture2D" uid="uid://c4uy3fnyxvjag" path="res://Assets_Art/foxenemy.png" id="1_hghv2"]
@@ -19,6 +19,11 @@ size = Vector2(24, 23)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1f0kj"]
 size = Vector2(24, 22)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1f0kj"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1f0kj"]
+modulate_color = Color(0.6786534, 0, 0.023173416, 1)
 
 [node name="enemy" type="CharacterBody2D"]
 y_sort_enabled = true
@@ -43,3 +48,11 @@ collision_mask = 2
 y_sort_enabled = true
 position = Vector2(-2, 3)
 shape = SubResource("RectangleShape2D_1f0kj")
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+offset_right = 4.0
+offset_bottom = 27.0
+theme_override_styles/background = SubResource("StyleBoxFlat_1f0kj")
+theme_override_styles/fill = SubResource("StyleBoxTexture_1f0kj")
+max_value = 1.0
+show_percentage = false

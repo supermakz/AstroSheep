@@ -1,159 +1,80 @@
 class_name AttackSystem
 extends Node2D
 
+signal attack_started
+signal attack_finished
+
+enum AttackType { UNARMED, INNERORBIT, MIDORBIT, OUTERORBIT }
+
 @onready var combo_timer: Timer = $ComboTimer
-@onready var ult_timer: Timer = $UltimateTimer
-@onready var projectile_spawn: Marker2D = $OrbitSpawnPoint
-@export var projectile_scene_orb: PackedScene
-@export var projectile_scene_aoe: PackedScene
+@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var melee_hitbox: Area2D = $MeleeHitbox
+@onready var effect_sprite: Node2D = $EffectSprite
+@export var base_melee_damage: int = 10
 
-var current_orbit_index: int = 0 # 0 = Unarmed (Default)
-var current_style_points: float = 0.0
-var is_ultimate_active: bool = false
-var current_combo_step: int = 0
+var combo_requested: bool = false
+var current_facing: Vector2 = Vector2.DOWN
+var current_attack_type: AttackType = AttackType.INNERORBIT
+var combo_step: int = 0
+var can_attack: bool = true
 
-enum AttackType { UNARMED = 0, INNERORBIT = 1, MIDORBIT = 2, OUTERORBIT = 3 }
-
-const ATTACK_CONFIG = {
-	AttackType.UNARMED: { "min_style": 0, "max_combo": 3, "damage_mult": 1.0, "style_gain": 10.0, "style_cost": 0.0 },
-	AttackType.INNERORBIT:   { "min_style": 0, "max_combo": 4, "damage_mult": 1.4, "style_gain": 7.0, "style_cost":0.0 },
-	AttackType.MIDORBIT:     { "min_style": 3, "max_combo": 1, "damage_mult": 1.2, "style_gain": 5.0,  "style_cost": 40.0 },
-	AttackType.OUTERORBIT:     { "min_style": 5, "max_combo": 1, "damage_mult": 0.0, "style_gain": 0.0,  "style_cost": 80.0 } # Multi 0 = kein damage
-			}
-
-func trigger_attack(aim_position: Vector2) -> void:
-	# Prüfen ob wir gerade überhaupt angreifen können
-	if not _can_attack():
+func _ready() -> void:
+	melee_hitbox.monitoring = false
+	combo_timer.timeout.connect(_on_combo_timeout)
+	
+func request_attack(facing_dir: Vector2) -> void:
+	if not can_attack:
+		combo_requested = true
 		return
 		
-	look_at(aim_position)
-
-	_execute_attack_logic(aim_position)		
-
-func _execute_attack_logic(aim_position: Vector2) -> void:
-	# Combo Reset prüfen
-	if combo_timer.is_stopped():
-		current_combo_step = 0	
-	
-	var anim_to_play = "attack_innerorbit" + str(current_combo_step + 1)
-	
-	if $AnimationPlayer.has_animation(anim_to_play):
-		$AnimationPlayer.play(anim_to_play)
-		$EffectSprite.look_at(aim_position)
-	
-	var cost = ATTACK_CONFIG[current_orbit_index]["style_cost"]	
-	current_style_points -= cost
-	if current_style_points < 0: current_style_points = 0		
-	
-	
-	var max_hits = ATTACK_CONFIG[current_orbit_index]["max_combo"]
-	if current_combo_step >= max_hits:
-		current_combo_step = 0 # Loop oder Reset je nach Design
-	
-	# Nächsten Schritt vorbereiten
-	current_combo_step += 1
-	combo_timer.start()
-	
-
-	# Rotation zum Ziel (Wichtig für Weapon 3 AOE & Weapon 2 Orb)
-	look_at(aim_position)
-	
-func _spawn_projectile(scene: PackedScene) -> void:
-	if not scene: return
-	
-	var proj = scene.instantiate()
-	get_tree().root.add_child(proj)
-	proj.global_position = projectile_spawn.global_position
-
-func get_style_level() -> int:
-	if current_style_points >= 700: return 7 # Ultimate Ready
-	if current_style_points >= 500: return 5 # Weapon 3
-	if current_style_points >= 300: return 3 # Weapon 2
-	if current_style_points >= 100: return 1 # Weapon 1
-	return 0 # Unarmed
-
-func add_style(amount: float) -> void:
-	current_style_points += amount
-	# TODO: UI Update Signal hier emitten
-	
-	# Cap bei Max Level
-	if current_style_points > 700: current_style_points = 700
-	
-var can_guard_counter: bool = false
-
-func register_parry(is_perfect: bool) -> void:
-	if is_perfect:
-		can_guard_counter = true
-		add_style(50.0) # Viel Style für Perfect Parry
-		# Kleines Zeitfenster für den Counter öffnen
-		get_tree().create_timer(1.0).timeout.connect(func(): can_guard_counter = false)
-	else:
-		add_style(0.0) # Wenig Style für normalen Block
-
-func _check_guard_counter() -> bool:
-	if can_guard_counter:
-		print("EXECUTE GUARD COUNTER!")
-		can_guard_counter = false
-		add_style(20.0) # Bonus für den Counter selbst
-		return true
-	return false
-
-func activate_ultimate() -> void:
-	if get_style_level() < 7: return
-	
-	is_ultimate_active = true
-	ult_timer.start()
-	print("ULTIMATE ACTIVATED: ALL WEAPONS FIRE!")
-	
-	# Visuals hier triggern (Shader, Partikel)
-
-func _on_ultimate_timer_timeout() -> void:
-	is_ultimate_active = false
-	current_style_points = 0 # Reset nach Ulti? (Design-Entscheidung)
-	print("Ultimate beendet")
-	
-func _can_attack() -> bool:
-	# Hier prüfen wir später States wie "Stunned", "Dead" oder "Global Cooldown"
-	if is_ultimate_active: return true
-	var config = ATTACK_CONFIG[current_orbit_index]
-	
-	if get_style_level() < config["min_style"]:
-		print("Not enough Style!:Need more")
-		return false
+	if facing_dir != Vector2.ZERO:
+		rotation = facing_dir.angle() + (PI / 2.0)		
 		
-	if current_style_points < config["style_cost"]:
-		print("zu Wenig style points")
-		return false
-	return true
-
-
-func set_orbit_index(index: int) -> void:
+	current_facing = facing_dir
+	can_attack = false
+	emit_signal("attack_started")
 	
-	if get_style_level() < ATTACK_CONFIG[index]["min_style"]:
-		print("Switch abgelehnt: Style Level zu niedrig. Fallback auf UNARMED.")
-		current_orbit_index = AttackType.UNARMED
-	else:
-		current_orbit_index = index
-		current_combo_step = 0 # Reset Combo bei Waffenwechsel
-		print("AttackSystem: Weapon switched to index %s" % index)
+	_play_combo_animation()
 
-# Wird vom AnimationPlayer via Method Call Track aufgerufen
-func set_hitbox_active(is_active: bool) -> void:
-	$MeleeHitbox/CollisionShape2D.disabled = !is_active
-	if is_active:
-		_check_guard_counter()
+func _play_combo_animation() -> void:
+	var anim_name := "attack_innerorbit%d" % (combo_step + 1)
+	
+	if animation_player.has_animation(anim_name):
+		animation_player.play(anim_name)
+	else:
+		push_warning("Missing Combo Animation: %s" % anim_name)
+
+	combo_timer.start()
+
+func _on_animation_player_animation_finished(anim_name: StringName) -> void:
+	if anim_name.begins_with("attack_innerorbit"):
+		combo_step += 1
+		
+		if combo_step >= 4:
+			combo_step = 0
+			
+		can_attack = true
+		
+		set_melee_hitbox_active(false)
+		
+		emit_signal("attack_finished")
+		if combo_requested:
+			combo_requested = false
+			request_attack(current_facing)
+
+func _on_combo_timeout() -> void:
+	combo_step = 0
+
+# Wird per AnimationPlayer (Call Method Track) aufgerufen
+func set_melee_hitbox_active(active: bool) -> void:
+	melee_hitbox.monitoring = active
+	$MeleeHitbox/CollisionShape2D.set_deferred("disabled", !active)
 
 func _on_melee_hitbox_area_entered(area: Area2D) -> void:
-	if area.has_method("take_damage"):
-		var config = ATTACK_CONFIG[current_orbit_index]
-		
-		var final_damage = 10 * config["damage_mult"]
-		area.take_damage(final_damage)
-		
-		add_style(config["style_gain"])
-		print("Hit! Damage: %s | Style gain: %s" % [final_damage, config["style_gain"]])
+	var target = area.get_parent() # Da Hitbox direkt unter Enemy liegt
+	if target and target.has_method("take_damage"):
+		target.take_damage(base_melee_damage, global_position)
 
-#Melee attack richtung ändern zu player direction nicht maus dir
-#Innerorbit animation nur bei innerorbit und nicht bei allen anderen animationen
-#animation placement fixen
-#hitbox timing fixen, hitboxen generell fixen, hitboxen, hitboxen, leck eier, hitboxen
+func set_attack_type(type: AttackType) -> void:
+	current_attack_type = type
+	combo_step = 0
