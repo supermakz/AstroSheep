@@ -41,10 +41,13 @@ tracks/1/path = NodePath(".")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0.14),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0.115, 0.145),
+"transitions": PackedFloat32Array(1, 1),
 "values": [{
 "args": [true],
+"method": &"set_melee_hitbox_active"
+}, {
+"args": [false],
 "method": &"set_melee_hitbox_active"
 }]
 }
@@ -83,10 +86,13 @@ tracks/1/path = NodePath(".")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0.14),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0.115, 0.145),
+"transitions": PackedFloat32Array(1, 1),
 "values": [{
 "args": [true],
+"method": &"set_melee_hitbox_active"
+}, {
+"args": [false],
 "method": &"set_melee_hitbox_active"
 }]
 }
@@ -125,10 +131,13 @@ tracks/1/path = NodePath(".")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0.14),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0.115, 0.145),
+"transitions": PackedFloat32Array(1, 1),
 "values": [{
 "args": [true],
+"method": &"set_melee_hitbox_active"
+}, {
+"args": [false],
 "method": &"set_melee_hitbox_active"
 }]
 }
@@ -167,10 +176,13 @@ tracks/1/path = NodePath(".")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0.14),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0.115, 0.145),
+"transitions": PackedFloat32Array(1, 1),
 "values": [{
 "args": [true],
+"method": &"set_melee_hitbox_active"
+}, {
+"args": [false],
 "method": &"set_melee_hitbox_active"
 }]
 }

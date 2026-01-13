@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://kph3okjs0un8"]
+[gd_scene load_steps=10 format=3 uid="uid://kph3okjs0un8"]
 
 [ext_resource type="Script" uid="uid://dwpyvk5ntmfha" path="res://Scripts/enemy.gd" id="1_1f0kj"]
 [ext_resource type="Texture2D" uid="uid://c4uy3fnyxvjag" path="res://Assets_Art/foxenemy.png" id="1_hghv2"]
+[ext_resource type="Resource" uid="uid://chn3pswle637e" path="res://data/stats/fox_enemy.tres" id="2_afpow"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_hghv2"]
 animations = [{
@@ -20,10 +21,13 @@ size = Vector2(24, 23)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1f0kj"]
 size = Vector2(24, 22)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1f0kj"]
+[sub_resource type="Theme" id="Theme_afpow"]
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1f0kj"]
-modulate_color = Color(0.6786534, 0, 0.023173416, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1f0kj"]
+bg_color = Color(0.6786534, 0, 0.023173416, 1)
+border_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_afpow"]
 
 [node name="enemy" type="CharacterBody2D"]
 z_index = 1
@@ -31,6 +35,7 @@ y_sort_enabled = true
 collision_layer = 4
 collision_mask = 7
 script = ExtResource("1_1f0kj")
+stats = ExtResource("2_afpow")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_hghv2")
@@ -52,7 +57,8 @@ shape = SubResource("RectangleShape2D_1f0kj")
 [node name="HealthBar" type="ProgressBar" parent="."]
 offset_right = 4.0
 offset_bottom = 27.0
+theme = SubResource("Theme_afpow")
 theme_override_styles/background = SubResource("StyleBoxFlat_1f0kj")
-theme_override_styles/fill = SubResource("StyleBoxTexture_1f0kj")
-max_value = 1.0
-show_percentage = false
+theme_override_styles/fill = SubResource("StyleBoxTexture_afpow")
+max_value = 1000.0
+fill_mode = 2
