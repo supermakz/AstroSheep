@@ -207,7 +207,7 @@ stats = SubResource("Resource_fkybt")
 y_sort_enabled = true
 texture = ExtResource("2_cvnsp")
 region_enabled = true
-region_rect = Rect2(75, 30, 27, 29)
+region_rect = Rect2(5, 30, 27, 29)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

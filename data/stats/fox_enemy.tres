@@ -5,5 +5,5 @@
 [resource]
 script = ExtResource("1_kvca3")
 base_max_health = 1000.0
-base_defense = 15.0
+base_defense = 14.88
 metadata/_custom_type_script = "uid://3cu0eca1xxi"
