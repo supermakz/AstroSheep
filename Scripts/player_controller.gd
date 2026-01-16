@@ -28,7 +28,7 @@ signal parry_success
 @export_group("Style/Power")
 @export var power_max: float = 100.0
 @export var power_decay_per_sec: float = 10.0
-@export var power_gain_attacktype_swap: float = 10.0 # NOTE: CHANGED: no longer used (swap alone gives no power)
+@export var power_gain_attacktype_swap: float = 10.0 # NOTE: no longer used (swap alone gives no power)
 @export var power_gain_target_swap: float = 12.0
 @export var power_gain_parry: float = 18.0
 @export var target_swap_combo_window: float = 2.5
@@ -38,10 +38,9 @@ signal parry_success
 
 @export var power_loss_parry_fail: float = 12.0
 
-# ADDED: reward for "swap -> full combo with hit"
 @export_group("Style/Power - Swap Reward")
-@export var power_gain_swap_combo: float = 14.0 # ADDED: tweakable
-@export var swap_reward_recent_block: int = 2 # ADDED: prevents A<->B pingpong (block last N rewarded types)
+@export var power_gain_swap_combo: float = 14.0
+@export var swap_reward_recent_block: int = 2
 
 @export var mult_t0: float = 1.00
 @export var mult_t1: float = 1.08
@@ -61,14 +60,10 @@ var last_attack_type_for_spam: int = -1
 var repeat_counter: int = 0
 var last_parry_award_time: float = -999.0
 
-# ---------------------------
-# ADDED: Swap->Combo reward gating
-# ---------------------------
-var pending_swap_active: bool = false # ADDED:
-var pending_swap_type: int = -1 # ADDED: int to match AttackSystem.AttackType
-var combo_had_hit: bool = false # ADDED: any hit during current combo window
-var recent_reward_types: Array[int] = [] # ADDED: keeps last rewarded types for anti ping-pong
-# ---------------------------
+var pending_swap_active: bool = false
+var pending_swap_type: int = -1
+var combo_had_hit: bool = false
+var recent_reward_types: Array[int] = []
 
 var facing_dir: Vector2 = Vector2.DOWN
 var state: State = State.IDLE
@@ -78,28 +73,41 @@ var dash_dir: Vector2 = Vector2.ZERO
 
 var current_attack_type: AttackType = AttackType.INNERORBIT
 
+# avoid spamming travel() every frame
+var _anim_node: StringName = &""
+
+# NEW: cache multiplier so we only push changes
+var _cached_power_mult: float = -1.0
+
 func _ready() -> void:
 	attack_system.attack_started.connect(_on_attack_started)
 	attack_system.attack_finished.connect(_on_attack_finished)
 
+	if attack_system.has_signal("attack_committed"):
+		attack_system.attack_committed.connect(_on_attack_committed)
+
 	if attack_system.has_signal("attack_hit"):
 		attack_system.attack_hit.connect(_on_attack_hit)
 
-	# ADDED: need combo completion event (minimal addition in AttackSystem)
 	if attack_system.has_signal("combo_completed"):
-		attack_system.combo_completed.connect(_on_combo_completed) # ADDED:
+		attack_system.combo_completed.connect(_on_combo_completed)
 
 	if stats != null:
 		attack_system.stats = stats
 
-	attack_system.set_power_multiplier(_get_power_multiplier())
+	_cached_power_mult = _get_power_multiplier()
+	attack_system.set_power_multiplier(_cached_power_mult)
 
 func _physics_process(delta: float) -> void:
 	_update_timers(delta)
 	_process_state(delta)
 
 	_update_power_decay(delta)
-	attack_system.set_power_multiplier(_get_power_multiplier())
+
+	var mult: float = _get_power_multiplier()
+	if mult != _cached_power_mult:
+		_cached_power_mult = mult
+		attack_system.set_power_multiplier(mult)
 
 	move_and_slide()
 
@@ -119,7 +127,10 @@ func _process_state(delta: float) -> void:
 			_handle_movement(delta)
 		State.DASH:
 			velocity = dash_dir * dash_speed
-		State.ATTACK, State.PARRY:
+		State.ATTACK:
+			_handle_input()
+			_handle_movement(delta, 0.85)
+		State.PARRY:
 			velocity = Vector2.ZERO
 
 	_update_animation()
@@ -135,29 +146,32 @@ func _handle_input() -> void:
 	if Input.is_action_just_pressed(INPUT_SWAP_ATTACK_TYPE):
 		_cycle_attack_type()
 
-func _handle_movement(delta: float) -> void:
+func _handle_movement(delta: float, speed_mult: float = 1.0) -> void:
 	var input: Vector2 = Input.get_vector("move_left", "move_right", "move_up", "move_down")
+
+	if state == State.IDLE or state == State.MOVE:
+		state = State.MOVE if input != Vector2.ZERO else State.IDLE
+
 	if input != Vector2.ZERO:
 		facing_dir = input.normalized()
-		state = State.MOVE
-		velocity = velocity.move_toward(input * speed, acceleration * delta)
+		velocity = velocity.move_toward(input * speed * speed_mult, acceleration * delta)
 		$Sprite2D.flip_h = input.x > 0.0
 	else:
-		state = State.IDLE
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 
 	_update_animation_blend()
 
 func _update_animation_blend() -> void:
-	if velocity.length() <= 0.01:
-		return
-	var dir: Vector2 = velocity.normalized()
+	var dir: Vector2 = facing_dir
 	anim_tree.set("parameters/walk/blend_position", dir)
 	anim_tree.set("parameters/idle/blend_position", dir)
+	anim_tree.set("parameters/dash/blend_position", dir)
 
 func _start_attack() -> void:
-	state = State.ATTACK
 	attack_system.request_attack(facing_dir)
+
+func _on_attack_committed() -> void:
+	state = State.ATTACK
 
 func _start_dash() -> void:
 	if dash_cd > 0.0:
@@ -177,11 +191,24 @@ func _start_parry() -> void:
 	state = State.PARRY
 	state_timer = parry_duration
 
+func _travel(node_name: StringName) -> void:
+	if _anim_node == node_name:
+		return
+	anim_state.travel(node_name) # CHANGED: no String allocation
+	_anim_node = node_name
+
 func _update_animation() -> void:
 	match state:
-		State.IDLE: anim_state.travel("idle")
-		State.MOVE: anim_state.travel("walk")
-		State.DASH: anim_state.travel("dash")
+		State.IDLE:
+			_travel(&"idle")
+		State.MOVE:
+			_travel(&"walk")
+		State.DASH:
+			_travel(&"dash")
+		State.ATTACK:
+			pass
+		State.PARRY:
+			pass
 
 func _on_attack_started() -> void:
 	var t: int = int(current_attack_type)
@@ -195,7 +222,6 @@ func _on_attack_started() -> void:
 		_add_power(-stale_penalty, "STALE_PENALTY")
 		repeat_counter = 0
 
-	# ADDED: new combo window started, reset hit flag
 	combo_had_hit = false
 
 func _on_attack_finished() -> void:
@@ -210,10 +236,8 @@ func _cycle_attack_type() -> void:
 	current_attack_type = next
 	attack_system.set_attack_type(next_i as AttackSystem.AttackType)
 
-	# CHANGED: swap itself gives NO power. It arms a pending reward.
-	pending_swap_active = true # ADDED:
-	pending_swap_type = next_i # ADDED:
-	# (no _add_power here)
+	pending_swap_active = true
+	pending_swap_type = next_i
 
 func _now_sec() -> float:
 	return float(Time.get_ticks_msec()) / 1000.0
@@ -257,10 +281,8 @@ func _update_power_decay(delta: float) -> void:
 func _on_attack_hit(target_id: int, _attack_type: AttackSystem.AttackType, _final_damage: int) -> void:
 	var t: float = _now_sec()
 
-	# mark that this combo actually connected
-	combo_had_hit = true # ADDED:
+	combo_had_hit = true
 
-	# Target swap style gain (still fine)
 	if (t - last_hit_time) <= target_swap_combo_window and target_id != last_target_id:
 		_add_power(power_gain_target_swap, "TARGET_SWAP")
 
@@ -268,11 +290,7 @@ func _on_attack_hit(target_id: int, _attack_type: AttackSystem.AttackType, _fina
 	last_hit_time = t
 	last_power_event_time = t
 
-func _on_combo_completed(attack_type: AttackSystem.AttackType) -> void: # ADDED:
-	# Reward only if:
-	# - we swapped before
-	# - the completed combo type matches the swapped-to type
-	# - the combo actually hit at least once
+func _on_combo_completed(attack_type: AttackSystem.AttackType) -> void:
 	if not pending_swap_active:
 		return
 	if int(attack_type) != pending_swap_type:
@@ -281,14 +299,12 @@ func _on_combo_completed(attack_type: AttackSystem.AttackType) -> void: # ADDED:
 		pending_swap_active = false
 		return
 
-	# Anti ping-pong: don't reward if this type was rewarded very recently
 	if recent_reward_types.has(pending_swap_type):
 		pending_swap_active = false
 		return
 
-	_add_power(power_gain_swap_combo, "SWAP_COMBO_HIT") # ADDED: reward payout
+	_add_power(power_gain_swap_combo, "SWAP_COMBO_HIT")
 
-	# update recent rewarded types list (keep last N)
 	recent_reward_types.push_back(pending_swap_type)
 	while recent_reward_types.size() > swap_reward_recent_block:
 		recent_reward_types.pop_front()

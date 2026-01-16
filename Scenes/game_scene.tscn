@@ -1,8 +1,7 @@
-[gd_scene load_steps=6 format=4 uid="uid://cwmuxmos65jje"]
+[gd_scene load_steps=5 format=4 uid="uid://cwmuxmos65jje"]
 
 [ext_resource type="PackedScene" uid="uid://g0driojvpwlg" path="res://Scenes/player.tscn" id="1_x87qo"]
 [ext_resource type="Texture2D" uid="uid://bsbpckj166i5" path="res://Assets_Art/TX Tileset Grass.png" id="2_b6fju"]
-[ext_resource type="PackedScene" uid="uid://kph3okjs0un8" path="res://Scenes/enemy.tscn" id="3_6h5vk"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6h5vk"]
 texture = ExtResource("2_b6fju")
@@ -346,15 +345,3 @@ tile_map_data = PackedByteArray("AAAAAP//AAAOAAMAAAD/////AAANAAMAAAAAAP7/AAAOAAI
 tile_set = SubResource("TileSet_fiftr")
 
 [node name="Player" parent="." instance=ExtResource("1_x87qo")]
-z_index = 1
-speed = null
-acceleration = null
-friction = null
-dash_speed = null
-dash_duration = null
-dash_cooldown = null
-parry_duration = null
-
-[node name="enemy" parent="." instance=ExtResource("3_6h5vk")]
-y_sort_enabled = false
-position = Vector2(4, -125)

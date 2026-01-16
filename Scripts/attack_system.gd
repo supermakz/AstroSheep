@@ -11,6 +11,12 @@ signal attack_started
 signal attack_finished
 signal attack_hit(target_id: int, attack_type: AttackType, final_damage: int)
 
+# ADDED: fired ONLY when an attack actually begins (animation started)
+signal attack_committed
+
+# ADDED: fired when a combo fully completes (used by your swap->combo reward)
+signal combo_completed(attack_type: AttackType)
+
 enum AttackType { UNARMED, INNERORBIT, MIDORBIT, OUTERORBIT }
 
 @onready var combo_timer: Timer = $ComboTimer
@@ -85,9 +91,11 @@ func request_attack(facing_dir: Vector2) -> void:
 		rotation = facing_dir.angle() + (PI / 2.0)
 
 	current_facing = facing_dir
-	can_attack = false
-	attack_started.emit()
-	_play_combo_animation()
+
+	# CHANGED: only commit state/emit start when we actually start an animation
+	if _play_combo_animation():
+		attack_started.emit()
+		attack_committed.emit()
 
 func _try_buffer_attack() -> void:
 	if not allow_input_buffer or buffered_attack:
@@ -101,17 +109,19 @@ func _try_buffer_attack() -> void:
 		buffered_attack = true
 		buffered_attack_time = t
 
-func _play_combo_animation() -> void:
+func _play_combo_animation() -> bool:
 	var anim_name: String = "%s%d" % [_get_anim_prefix(), (combo_step + 1)]
 
 	if not animation_player.has_animation(anim_name):
 		push_warning("Missing Combo Animation (no fallback): %s" % anim_name)
+		# CHANGED: do NOT emit attack_finished here; attack never started.
 		can_attack = true
 		buffered_attack = false
 		set_melee_hitbox_active(false)
-		attack_finished.emit()
-		return
+		return false
 
+	# CHANGED: lock only when we really start
+	can_attack = false
 	animation_player.play(anim_name)
 
 	# track timing for input buffer window
@@ -121,6 +131,7 @@ func _play_combo_animation() -> void:
 	# watchdog reset timer
 	combo_timer_mode = ComboTimerMode.COMBO_RESET
 	combo_timer.start()
+	return true
 
 func _get_anim_prefix() -> String:
 	match current_attack_type:
@@ -143,6 +154,10 @@ func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 		# combo end -> reset + cooldown lockout
 		combo_step = 0
 		buffered_attack = false
+
+		# ADDED: combo completed event (your Player expects it)
+		combo_completed.emit(current_attack_type)
+
 		attack_finished.emit()
 
 		var cd: float = _get_combo_cooldown()

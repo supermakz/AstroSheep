@@ -1,0 +1,38 @@
+[gd_scene load_steps=6 format=3 uid="uid://bq1tlo1m6hoe7"]
+
+[ext_resource type="PackedScene" uid="uid://c5tg28dovfh4a" path="res://Scenes/enemy_base.tscn" id="1_1bwki"]
+[ext_resource type="Texture2D" uid="uid://c4uy3fnyxvjag" path="res://Assets_Art/foxenemy.png" id="2_lr2s3"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lr2s3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_lr2s3")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_16u2q"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_40prw"]
+
+[node name="FoxEnemy" instance=ExtResource("1_1bwki")]
+
+[node name="Fox_AI" type="Node2D" parent="AI_Anchor" index="0"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." index="3"]
+sprite_frames = SubResource("SpriteFrames_lr2s3")
+
+[node name="Hurtbox" type="Area2D" parent="." index="4"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" index="0"]
+shape = SubResource("CircleShape2D_16u2q")
+
+[node name="Melee_Attack" type="Area2D" parent="." index="5"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Melee_Attack" index="0"]
+shape = SubResource("CircleShape2D_40prw")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="6"]
