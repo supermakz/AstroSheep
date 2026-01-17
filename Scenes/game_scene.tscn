@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=4 uid="uid://cwmuxmos65jje"]
+[gd_scene load_steps=6 format=4 uid="uid://cwmuxmos65jje"]
 
 [ext_resource type="PackedScene" uid="uid://g0driojvpwlg" path="res://Scenes/player.tscn" id="1_x87qo"]
 [ext_resource type="Texture2D" uid="uid://bsbpckj166i5" path="res://Assets_Art/TX Tileset Grass.png" id="2_b6fju"]
+[ext_resource type="PackedScene" uid="uid://bq1tlo1m6hoe7" path="res://Scenes/fox_enemy.tscn" id="3_6h5vk"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6h5vk"]
 texture = ExtResource("2_b6fju")
@@ -345,3 +346,11 @@ tile_map_data = PackedByteArray("AAAAAP//AAAOAAMAAAD/////AAANAAMAAAAAAP7/AAAOAAI
 tile_set = SubResource("TileSet_fiftr")
 
 [node name="Player" parent="." instance=ExtResource("1_x87qo")]
+position = Vector2(-91, 94)
+
+[node name="FoxEnemy" parent="." instance=ExtResource("3_6h5vk")]
+z_index = 1
+y_sort_enabled = true
+position = Vector2(4, -140)
+collision_layer = 4
+collision_mask = 7

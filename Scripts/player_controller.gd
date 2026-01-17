@@ -51,6 +51,7 @@ signal parry_success
 @export_group("Debug")
 @export var debug_power_print: bool = true
 @export var debug_power_print_decay: bool = false
+@export var debug_player_damage_print: bool = true
 
 var power_gauge: float = 0.0
 var last_power_event_time: float = 0.0
@@ -321,3 +322,16 @@ func notify_parry_success() -> void:
 
 func notify_parry_fail() -> void:
 	_add_power(-power_loss_parry_fail, "PARRY_FAIL")
+	
+func take_damage(amount: int, from_position: Vector2) -> void:
+	if stats == null:
+		if debug_player_damage_print:
+			print("[PLAYER] ", name, " took ", amount, " but has NO Stats assigned.")
+		return
+
+	var hp_before := stats.current_health
+	stats.current_health = maxf(0.0, stats.current_health - float(amount))
+	var hp_after := stats.current_health
+
+	if debug_player_damage_print:
+		print("[PLAYER] ", name, " took ", amount, " | HP: ", snappedf(hp_before, 0.01), " -> ", snappedf(hp_after, 0.01), " / ", snappedf(stats.current_max_health, 0.01))

@@ -16,7 +16,18 @@ script = ExtResource("2_lr2s3")
 
 [node name="Fox_Moveset" type="Node" parent="AI_Anchor/Fox_AI" index="0"]
 script = ExtResource("3_16u2q")
+melee_attack_path = null
+anim_player_path = null
+melee_damage = null
+debug_damage_print = null
+scratch_windup = null
+scratch_active = null
+scratch_recovery = null
+pounce_windup = null
+pounce_lunge_time = null
 pounce_distance_px = 40.0
+pounce_active_start = null
+pounce_recovery = null
 pounce_stop_distance = 24.0
 
 [node name="Body" type="Sprite2D" parent="Visuals" index="0"]

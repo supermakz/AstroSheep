@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3 uid="uid://g0driojvpwlg"]
+[gd_scene load_steps=42 format=3 uid="uid://g0driojvpwlg"]
 
 [ext_resource type="Script" uid="uid://firo45ogeshs" path="res://Scripts/player_controller.gd" id="1_v0iea"]
 [ext_resource type="Script" uid="uid://3cu0eca1xxi" path="res://Scripts/stats.gd" id="2_vgqql"]
@@ -302,6 +302,8 @@ graph_offset = Vector2(-186.61308, 0)
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_cvnsp"]
 height = 26.0
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_vgqql"]
+
 [node name="Player" type="CharacterBody2D" groups=["player"]]
 z_index = 1
 y_sort_enabled = true
@@ -329,7 +331,11 @@ parameters/dash/blend_position = Vector2(0, 0)
 parameters/idle/blend_position = Vector2(0, 0.774)
 parameters/walk/blend_position = Vector2(0, 0.774)
 
-[node name="Hurtbox" type="CollisionShape2D" parent="."]
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 7
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
 y_sort_enabled = true
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_cvnsp")
@@ -348,3 +354,6 @@ drag_left_margin = 0.15
 drag_top_margin = 0.15
 drag_right_margin = 0.15
 drag_bottom_margin = 0.15
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_vgqql")

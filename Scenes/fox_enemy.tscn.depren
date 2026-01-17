@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://c5tg28dovfh4a" path="res://Scenes/enemy_base.tscn" id="1_1bwki"]
 [ext_resource type="Resource" uid="uid://chn3pswle637e" path="res://data/stats/fox_enemy.tres" id="2_75oa7"]
 [ext_resource type="Script" uid="uid://bcia5i7hsln8" path="res://Scripts/fox_ai.gd" id="2_lr2s3"]
-[ext_resource type="Script" uid="uid://4lvng56ksuob" path="res://Scenes/fox_moveset.gd" id="3_16u2q"]
+[ext_resource type="Script" uid="uid://4lvng56ksuob" path="res://Scripts/fox_moveset.gd" id="3_16u2q"]
 [ext_resource type="Texture2D" uid="uid://c4uy3fnyxvjag" path="res://Assets_Art/foxenemy.png" id="4_40prw"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1bwki"]
