@@ -1,9 +1,10 @@
-[gd_scene load_steps=42 format=3 uid="uid://g0driojvpwlg"]
+[gd_scene format=3 uid="uid://g0driojvpwlg"]
 
 [ext_resource type="Script" uid="uid://firo45ogeshs" path="res://Scripts/player_controller.gd" id="1_v0iea"]
 [ext_resource type="Script" uid="uid://3cu0eca1xxi" path="res://Scripts/stats.gd" id="2_vgqql"]
 [ext_resource type="PackedScene" uid="uid://dxuyeu6hpblcg" path="res://Scenes/attack_system.tscn" id="3_6t5aa"]
 [ext_resource type="Texture2D" uid="uid://b5i1km2bfsla" path="res://Assets_Art/AstroSheet.png" id="3_vgqql"]
+[ext_resource type="Script" uid="uid://caa21lmxldpfn" path="res://Scenes/aim_indicator.gd" id="5_fkybt"]
 
 [sub_resource type="Resource" id="Resource_fkybt"]
 script = ExtResource("2_vgqql")
@@ -304,7 +305,7 @@ height = 26.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vgqql"]
 
-[node name="Player" type="CharacterBody2D" groups=["player"]]
+[node name="Player" type="CharacterBody2D" unique_id=1567939392 groups=["player"]]
 z_index = 1
 y_sort_enabled = true
 collision_layer = 2
@@ -312,18 +313,16 @@ collision_mask = 5
 script = ExtResource("1_v0iea")
 stats = SubResource("Resource_fkybt")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1478238777]
 y_sort_enabled = true
 texture = ExtResource("3_vgqql")
 region_enabled = true
 region_rect = Rect2(0, 128, 32, 32)
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_fkybt")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1262849691]
+libraries/ = SubResource("AnimationLibrary_fkybt")
 
-[node name="AnimationTree" type="AnimationTree" parent="."]
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=8310893]
 tree_root = SubResource("AnimationNodeStateMachine_8erm5")
 advance_expression_base_node = NodePath("..")
 anim_player = NodePath("../AnimationPlayer")
@@ -331,21 +330,19 @@ parameters/dash/blend_position = Vector2(0, 0)
 parameters/idle/blend_position = Vector2(0, 0.774)
 parameters/walk/blend_position = Vector2(0, 0.774)
 
-[node name="Hurtbox" type="Area2D" parent="."]
+[node name="Hurtbox" type="Area2D" parent="." unique_id=155152795]
 collision_layer = 2
 collision_mask = 7
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox" unique_id=1686733092]
 y_sort_enabled = true
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_cvnsp")
 
-[node name="AttackSystem" parent="." instance=ExtResource("3_6t5aa")]
+[node name="AttackSystem" parent="." unique_id=408285841 instance=ExtResource("3_6t5aa")]
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position_smoothing_enabled = true
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1588409009]
 position_smoothing_speed = 30.0
-rotation_smoothing_enabled = true
 drag_horizontal_enabled = true
 drag_vertical_enabled = true
 drag_horizontal_offset = 0.5
@@ -355,5 +352,17 @@ drag_top_margin = 0.15
 drag_right_margin = 0.15
 drag_bottom_margin = 0.15
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1258346063]
 shape = SubResource("CircleShape2D_vgqql")
+
+[node name="AimIndicator" type="Node2D" parent="." unique_id=1003977396]
+z_index = 10
+script = ExtResource("5_fkybt")
+radius = 23.0
+arc_degrees = 67.0
+segments = 2
+back_thickness = 1.0
+front_thickness = 3.0
+tip_length = 0.0
+tip_width = 0.0
+color = Color(1, 1, 1, 0.27058825)

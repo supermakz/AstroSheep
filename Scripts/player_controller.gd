@@ -168,8 +168,19 @@ func _update_animation_blend() -> void:
 	anim_tree.set("parameters/idle/blend_position", dir)
 	anim_tree.set("parameters/dash/blend_position", dir)
 
+#  attack aim comes from mouse world position, not movement facing
+func _get_attack_aim_dir() -> Vector2:
+	var mouse_world: Vector2 = get_global_mouse_position()
+	var aim_dir: Vector2 = mouse_world - global_position
+
+	if aim_dir.length_squared() <= 0.0001:
+		return facing_dir
+
+	return aim_dir.normalized()
+
+# use mouse aim direction
 func _start_attack() -> void:
-	attack_system.request_attack(facing_dir)
+	attack_system.request_attack(_get_attack_aim_dir())
 
 func _on_attack_committed() -> void:
 	state = State.ATTACK
